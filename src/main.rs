@@ -155,6 +155,64 @@ impl EdmHeader {
         }
     }
 
+    fn process_header_alarms(header_line: &str) -> Option<Alarms> {
+        let mut alarms = EdmHeader::process_header_clean(header_line);
+        let mut alarms_itr = alarms.iter_mut();
+        Some(Alarms {
+            max_volts: Some(
+                alarms_itr
+                    .next()?
+                    .parse::<f64>()
+                    .expect("Could not parse alarm")
+                    / 10.0,
+            ),
+            min_volts: Some(
+                &alarms_itr
+                    .next()?
+                    .parse::<f64>()
+                    .expect("Could not parse alarm")
+                    / 10.0,
+            ),
+            max_egt_spread: Some(
+                alarms_itr
+                    .next()?
+                    .parse::<i32>()
+                    .expect("Could not parse alarm"),
+            ),
+            max_cht: Some(
+                alarms_itr
+                    .next()?
+                    .parse::<i32>()
+                    .expect("Could not parse alarm"),
+            ),
+            max_cht_cool_rate: Some(
+                alarms_itr
+                    .next()?
+                    .parse::<i32>()
+                    .expect("Could not parse alarm"),
+            ),
+            max_egt: Some(
+                alarms_itr
+                    .next()?
+                    .parse::<i32>()
+                    .expect("Could not parse alarm"),
+            ),
+            max_oil_temp: Some(
+                alarms_itr
+                    .next()?
+                    .parse::<i32>()
+                    .expect("Could not parse alarm"),
+            ),
+            min_oil_temp: Some(
+                alarms_itr
+                    .next()?
+                    .parse::<i32>()
+                    .expect("Could not parse alarm"),
+            ),
+            ..Default::default()
+        })
+    }
+
     fn data(&self) -> HeaderData {
         let headers = self.parse();
         let mut header_data = HeaderData {
@@ -164,6 +222,9 @@ impl EdmHeader {
             match line.chars().nth(1).expect("Empty Header!") {
                 'U' => {
                     header_data.registration = EdmHeader::process_header_rego(line);
+                }
+                'A' => {
+                    header_data.alarms = EdmHeader::process_header_alarms(line);
                 }
                 _ => (),
             }
