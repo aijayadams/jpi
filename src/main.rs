@@ -163,10 +163,9 @@ impl EdmHeader {
         for line in headers.lines() {
             match line.chars().nth(1).expect("Empty Header!") {
                 'U' => {
-                    println!("Rego!");
                     header_data.registration = EdmHeader::process_header_rego(line);
                 }
-                _ => println!("Invalid Header"),
+                _ => (),
             }
         }
         header_data
