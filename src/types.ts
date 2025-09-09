@@ -43,7 +43,11 @@ export interface DecodeAPI {
 
 export interface FlightSummary {
   id: number;
-  dateTime: string; // "MM/DD/YYYY HH:mm:ss"
+  // Date of the flight (MM/DD/YYYY). Time components are provided separately.
+  dateTime: string; // "MM/DD/YYYY"
+  // Clock times at first and last sample for the flight
+  timeOff?: string; // "HH:mm:ss"
+  timeIn?: string;  // "HH:mm:ss"
   samples: number;
   tachStart?: number;
   tachEnd?: number;

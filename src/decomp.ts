@@ -466,15 +466,25 @@ export class Decomp {
       const tachDuration = (tachStart !== undefined && tachEnd !== undefined)
         ? Number(((tachEnd - tachStart)).toFixed(1))
         : undefined;
-      // Hobb duration from first and last DATE/TIME
+      // Hobb duration from first and last DATE/TIME; also expose timeOff/timeIn
       let hobbDuration: number | undefined;
-      if (rows.length >= 2) {
-        const fdt = `${rows[0][0]} ${rows[0][1]}`;
-        const ldt = `${rows[rows.length - 1][0]} ${rows[rows.length - 1][1]}`;
-        const t0 = new Date(fdt).getTime();
-        const t1 = new Date(ldt).getTime();
-        if (Number.isFinite(t0) && Number.isFinite(t1)) {
-          hobbDuration = Number((((t1 - t0) / 3600000)).toFixed(1));
+      let timeOff: string | undefined;
+      let timeIn: string | undefined;
+      if (rows.length >= 1) {
+        const firstDate = rows[0][0];
+        const firstTime = rows[0][1];
+        timeOff = firstTime;
+        if (rows.length >= 2) {
+          const lastDate = rows[rows.length - 1][0];
+          const lastTime = rows[rows.length - 1][1];
+          timeIn = lastTime;
+          const fdt = `${firstDate} ${firstTime}`;
+          const ldt = `${lastDate} ${lastTime}`;
+          const t0 = new Date(fdt).getTime();
+          const t1 = new Date(ldt).getTime();
+          if (Number.isFinite(t0) && Number.isFinite(t1)) {
+            hobbDuration = Number((((t1 - t0) / 3600000)).toFixed(1));
+          }
         }
       }
       // First and final GPS coords
@@ -499,7 +509,10 @@ export class Decomp {
 
       result.push({
         id: f.id,
-        dateTime: `${f.date} ${f.time}`.trim(),
+        // Summaries now surface date only; times are separated
+        dateTime: f.date,
+        timeOff,
+        timeIn,
         samples: rows.length,
         tachStart,
         tachEnd,

@@ -33,14 +33,16 @@ if (args.length === 0) {
   if (jsonFlag) {
     console.log(JSON.stringify(summaries, null, 2));
   } else {
-    console.log('ID\tDATE TIME\tTach Start-End (h)\tTach Dur (h)\tHobb Dur (h)\tSamples\tStart (LAT,LNG)\tEnd (LAT,LNG)');
+    console.log('ID\tDATE\tTIME OFF\tTIME IN\tTach Start-End (h)\tTach Dur (h)\tHobb Dur (h)\tSamples\tStart (LAT,LNG)\tEnd (LAT,LNG)');
     for (const s of summaries) {
       const tachSpan = (s.tachStart !== undefined && s.tachEnd !== undefined) ? `${s.tachStart.toFixed(1)}-${s.tachEnd.toFixed(1)}` : 'NA-NA';
       const tdur = s.tachDuration !== undefined ? s.tachDuration.toFixed(1) : 'NA';
       const adur = s.hobbDuration !== undefined ? s.hobbDuration.toFixed(1) : 'NA';
       const st = (s.startLat && s.startLng) ? `${s.startLat},${s.startLng}` : 'NA';
       const en = (s.endLat && s.endLng) ? `${s.endLat},${s.endLng}` : 'NA';
-      console.log(`${s.id}\t${s.dateTime}\t${tachSpan}\t${tdur}\t${adur}\t${s.samples}\t${st}\t${en}`);
+      const to = s.timeOff ?? 'NA';
+      const ti = s.timeIn ?? 'NA';
+      console.log(`${s.id}\t${s.dateTime}\t${to}\t${ti}\t${tachSpan}\t${tdur}\t${adur}\t${s.samples}\t${st}\t${en}`);
     }
   }
   process.exit(0);

@@ -23,7 +23,7 @@ Tests
   - Prints `Golden tests passed` on success; otherwise shows the first differing line.
 
 CLI usage
-- List flights in a JPI (ID, date/time, tach start‑end, tach duration, actual duration, samples, start/end GPS):
+- List flights in a JPI (ID, date, time off, time in, tach start‑end, tach duration, actual duration, samples, start/end GPS):
   - `node dist/cli.js <path-to.jpi>`
   - JSON output: `node dist/cli.js <path-to.jpi> --json`
   - Example: `node dist/cli.js example_files/U250901.JPI`
@@ -56,9 +56,9 @@ Library usage
 
 Summaries API
 - `const summaries = d.summarizeFlights()` returns an array with:
-  - `id`, `dateTime`, `samples`
+  - `id`, `dateTime` (date only, `MM/DD/YYYY`), `timeOff` (`HH:mm:ss`), `timeIn` (`HH:mm:ss`), `samples`
   - `tachStart`, `tachEnd`, `tachDuration` (hours)
-  - `actualDuration` (hours between first and last sample times)
+  - `hobbDuration` (hours between first and last sample times)
   - `startLat`, `startLng`, `endLat`, `endLng`
 
 Notes
