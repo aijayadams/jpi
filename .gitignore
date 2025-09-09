@@ -1,1 +1,35 @@
+# Rust-style build dir (harmless if present)
 /target
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+
+# OS cruft
+.DS_Store
+
+# Editor/IDE
+*.swp
+.idea/
+.vscode/
