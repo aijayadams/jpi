@@ -1,3 +1,3 @@
-import { decodeJpiFileToCsv, decodeJpiBufferToCsv, Decomp } from './decomp';
-export { decodeJpiFileToCsv, decodeJpiBufferToCsv, Decomp };
+import { decodeJpiFileToCsv, decodeJpiBufferToCsv, decodeJpi, Decomp } from './decomp';
+export { decodeJpiFileToCsv, decodeJpiBufferToCsv, decodeJpi, Decomp };
 export * from './types';

@@ -1,4 +1,4 @@
-import { FlightRecord, HeadersRows, FlightSummary } from './types';
+import { DecodeJpiResult, FlightRecord, HeadersRows, FlightSummary, JpiCsvRow } from './types';
 import * as fs from 'fs';
 
 // Utility formatting similar to VB's pad and Conversion.Str/Strings.Format
@@ -833,4 +833,26 @@ export function decodeJpiBufferToCsv(buf: Uint8Array, flightId: number): { heade
 export function decodeJpiFileToCsv(path: string, flightId: number): { headers: string[]; rows: string[][] } {
   const buf = fs.readFileSync(path);
   return decodeJpiBufferToCsv(buf, flightId);
+}
+
+// Convenience helper: decode a JPI file into objects keyed by CSV headers.
+// The returned headers array matches the CLI CSV: starts with "INDEX,DATE,TIME,...".
+export function decodeJpi(path: string, flightId: number): DecodeJpiResult {
+  const { headers, rows } = decodeJpiFileToCsv(path, flightId);
+  const fullHeaders = ['INDEX', ...headers];
+
+  const objectRows: JpiCsvRow[] = rows.map((cols, index) => {
+    const row: JpiCsvRow = {
+      INDEX: index,
+      DATE: cols[0] ?? '',
+      TIME: cols[1] ?? '',
+    };
+    for (let i = 2; i < headers.length; i++) {
+      const key = headers[i];
+      row[key] = cols[i] ?? '';
+    }
+    return row;
+  });
+
+  return { headers: fullHeaders, rows: objectRows };
 }

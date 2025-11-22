@@ -33,6 +33,51 @@ export interface HeadersRows {
   rows: string[][]; // Columns: DATE,TIME,FM,... per header order
 }
 
+export interface JpiCsvRow {
+  INDEX: number;
+  DATE: string;
+  TIME: string;
+  // Sensor/derived columns (match current CSV headers)
+  E1?: string;
+  E2?: string;
+  E3?: string;
+  E4?: string;
+  C1?: string;
+  C2?: string;
+  C3?: string;
+  C4?: string;
+  OAT?: string;
+  DIF?: string;
+  CLD?: string;
+  MAP?: string;
+  RPM?: string;
+  HP?: string;
+  FF?: string;
+  FF2?: string;
+  FP?: string;
+  OILP?: string;
+  BAT?: string;
+  AMP?: string;
+  OILT?: string;
+  USD?: string;
+  USD2?: string;
+  RFL?: string;
+  LFL?: string;
+  HRS?: string;
+  SPD?: string;
+  ALT?: string;
+  LAT?: string;
+  LNG?: string;
+  MARK?: string;
+  // Allow access via dynamic header key as well
+  [column: string]: string | number | undefined;
+}
+
+export interface DecodeJpiResult {
+  headers: string[]; // Full header line including INDEX
+  rows: JpiCsvRow[];
+}
+
 export interface DecodeAPI {
   parseFile(buf: Uint8Array): void;
   listFlights(): FlightRecord[];
