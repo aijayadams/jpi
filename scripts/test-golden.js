@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { decodeJpiFileToCsv, Decomp } = require('../dist/decomp.js');
+const { decodeJpiFileToCsv, decodeJpi, Decomp } = require('../dist/decomp.js');
 
 function composeCsv(headers, rows) {
   const lines = [];
@@ -75,6 +75,59 @@ function main() {
     const csv = path.join(examples, 'Flt598.csv');
     const { headers, rows } = decodeJpiFileToCsv(jpi, 598);
     assertEqualCsv(csv, headers, rows, 'U250901.JPI flight 598');
+  }
+
+  // Object-row API: decodeJpi should mirror CSV headers/rows
+  {
+    const jpi = path.join(examples, 'U250118.JPI');
+    const { headers: csvHeaders, rows: csvRows } = decodeJpiFileToCsv(jpi, 559);
+    const { headers: objHeaders, rows: objRows } = decodeJpi(jpi, 559);
+
+    // Headers: decodeJpi should prepend INDEX and otherwise match
+    const expectedHeaders = ['INDEX', ...csvHeaders];
+    if (objHeaders.length !== expectedHeaders.length ||
+        !objHeaders.every((h, i) => h === expectedHeaders[i])) {
+      console.error('decodeJpi headers mismatch');
+      console.error('Expected:', expectedHeaders.join(','));
+      console.error('Actual:  ', objHeaders.join(','));
+      process.exit(1);
+    }
+
+    if (objRows.length !== csvRows.length) {
+      console.error('decodeJpi row count mismatch');
+      console.error('Expected rows:', csvRows.length);
+      console.error('Actual rows:  ', objRows.length);
+      process.exit(1);
+    }
+
+    // Spot-check a few rows (first, middle, last) for field alignment
+    const indicesToCheck = [0, Math.floor(objRows.length / 2), objRows.length - 1]
+      .filter(i => i >= 0);
+    for (const idx of indicesToCheck) {
+      const obj = objRows[idx];
+      const csv = csvRows[idx];
+      if (obj.INDEX !== idx) {
+        console.error(`decodeJpi INDEX mismatch at row ${idx}: expected ${idx}, got ${obj.INDEX}`);
+        process.exit(1);
+      }
+      if (obj.DATE !== csv[0] || obj.TIME !== csv[1]) {
+        console.error(`decodeJpi DATE/TIME mismatch at row ${idx}`);
+        console.error('CSV:', csv[0], csv[1]);
+        console.error('OBJ:', obj.DATE, obj.TIME);
+        process.exit(1);
+      }
+      for (let c = 2; c < csvHeaders.length; c++) {
+        const key = csvHeaders[c];
+        const got = obj[key];
+        const want = csv[c];
+        if ((got || '') !== (want || '')) {
+          console.error(`decodeJpi field mismatch at row ${idx}, column ${key}`);
+          console.error('Expected:', want);
+          console.error('Actual:  ', got);
+          process.exit(1);
+        }
+      }
+    }
   }
 
   // Summaries sanity check
